@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dairy Management System - Enhanced</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="hero" id="home">
+    <nav class="navbar"
+        <div class="brand">DairyPro</div>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#dashboard">Dashboard</a>
+            <a href="#farmer">Farmer</a>
+            <a href="#collection">Collection</a>
+            <a href="#products">Products</a>
+        </div>
+    </nav>
+
+    <section class="hero-content">
+        <p class="eyebrow">Smart Dairy Management</p>
+        <h1>Manage milk collection, farmers, products and payments in one place.</h1>
+        <p class="hero-text">
+            Track daily operations using responsive layouts, browser storage, location access and interactive modals.
+        </p>
+        <div class="hero-actions">
+            <a href="#farmer" class="primary-action">Add Farmer</a>
+            <button type="button" class="secondary-action" onclick="openModal('aboutModal')">View Features</button>
+        </div>
+    </section>
+</header>
+
+<main>
+    <section class="section" id="dashboard">
+        <div class="section-heading">
+            <p class="eyebrow">Live Overview</p>
+            <h2>Dashboard</h2>
+        </div>
+
+        <div class="stats-grid">
+            <article class="stat-card">
+                <span>Farmers</span>
+                <strong id="farmerCount">0</strong>
+            </article>
+            <article class="stat-card">
+                <span>Milk Collections</span>
+                <strong id="collectionCount">0</strong>
+            </article>
+            <article class="stat-card">
+                <span>Products</span>
+                <strong id="productCount">0</strong>
+            </article>
+            <article class="stat-card">
+                <span>Last Location</span>
+                <strong id="locationStatus">Not Set</strong>
+            </article>
+        </div>
+    </section>
+
+    <section class="section form-section" id="farmer">
+        <div class="section-heading">
+            <p class="eyebrow">Registration</p>
+            <h2>Farmer Details</h2>
+        </div>
+
+        <form class="app-form" onsubmit="saveFarmer(event)">
+            <div class="form-grid">
+                <label>
+                    Farmer Name
+                    <input id="farmerName" type="text" placeholder="Enter farmer name" required>
+                </label>
+                <label>
+                    Phone Number
+                    <input id="farmerPhone" type="tel" placeholder="Enter phone number" required>
+                </label>
+                <label>
+                    Email
+                    <input id="farmerEmail" type="email" placeholder="farmer@example.com">
+                </label>
+                <label>
+                    City
+                    <input id="farmerCity" type="text" placeholder="Enter city" required>
+                </label>
+            </div>
+            <div class="button-row">
+                <button type="submit">Save Farmer</button>
+                <button type="button" class="outline-button" onclick="getLocation()">Use Geolocation</button>
+            </div>
+            <p class="location-text" id="geoOutput">Location coordinates will appear here.</p>
+        </form>
+    </section>
+
+    <section class="section form-section" id="collection">
+        <div class="section-heading">
+            <p class="eyebrow">Daily Entry</p>
+            <h2>Milk Collection</h2>
+        </div>
+
+        <form class="app-form" onsubmit="saveCollection(event)">
+            <div class="form-grid">
+                <label>
+                    Farmer ID
+                    <input type="number" placeholder="Example: 1001" required>
+                </label>
+                <label>
+                    Milk Type
+                    <select required>
+                        <option value="">Select type</option>
+                        <option>Cow Milk</option>
+                        <option>Buffalo Milk</option>
+                    </select>
+                </label>
+                <label>
+                    Quantity in Litres
+                    <input type="number" min="1" placeholder="Example: 25" required>
+                </label>
+                <label>
+                    Collection Date
+                    <input type="date" required>
+                </label>
+            </div>
+            <button type="submit">Save Collection</button>
+        </form>
+    </section>
+
+    <section class="section" id="products">
+        <div class="section-heading">
+            <p class="eyebrow">Inventory</p>
+            <h2>Dairy Products</h2>
+        </div>
+
+        <div class="product-grid">
+            <article class="product-card">
+                <h3>Milk</h3>
+                <p>Fresh packed milk for daily sales.</p>
+                <button type="button" onclick="saveProduct('Milk')">Add Product</button>
+            </article>
+            <article class="product-card">
+                <h3>Paneer</h3>
+                <p>Prepared from quality-tested milk.</p>
+                <button type="button" onclick="saveProduct('Paneer')">Add Product</button>
+            </article>
+            <article class="product-card">
+                <h3>Ghee</h3>
+                <p>Premium dairy product with stock tracking.</p>
+                <button type="button" onclick="saveProduct('Ghee')">Add Product</button>
+            </article>
+        </div>
+    </section>
+</main>
+
+<div class="modal-overlay" id="successModal">
+    <div class="modal-box">
+        <button type="button" class="close-button" onclick="closeModal('successModal')">&times;</button>
+        <h2 id="modalTitle">Success</h2>
+        <p id="modalMessage">Data saved successfully.</p>
+        <button type="button" onclick="closeModal('successModal')">Okay</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="aboutModal">
+    <div class="modal-box">
+        <button type="button" class="close-button" onclick="closeModal('aboutModal')">&times;</button>
+        <h2>Included Features</h2>
+        <p>This version includes Flexbox, CSS Grid, navigation bar, hero section, modals, localStorage and Geolocation API.</p>
+        <button type="button" onclick="closeModal('aboutModal')">Close</button>
+    </div>
+</div>
+
+<script>
+let farmerCount = Number(localStorage.getItem("farmerCount")) || 0;
+let collectionCount = Number(localStorage.getItem("collectionCount")) || 0;
+let productCount = Number(localStorage.getItem("productCount")) || 0;
+let savedLocation = localStorage.getItem("farmerLocation") || "Not Set";
+
+function updateDashboard() {
+    document.getElementById("farmerCount").textContent = farmerCount;
+    document.getElementById("collectionCount").textContent = collectionCount;
+    document.getElementById("productCount").textContent = productCount;
+    document.getElementById("locationStatus").textContent = savedLocation === "Not Set" ? "Not Set" : "Saved";
+}
+
+function openModal(modalId) {
+    document.getElementById(modalId).classList.add("show");
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove("show");
+}
+
+function showSuccess(title, message) {
+    document.getElementById("modalTitle").textContent = title;
+    document.getElementById("modalMessage").textContent = message;
+    openModal("successModal");
+}
+
+function saveFarmer(event) {
+    event.preventDefault();
+    farmerCount++;
+    localStorage.setItem("farmerCount", farmerCount);
+    localStorage.setItem("lastFarmerName", document.getElementById("farmerName").value);
+    updateDashboard();
+    event.target.reset();
+    showSuccess("Farmer Saved", "Farmer details have been saved using localStorage.");
+}
+
+function saveCollection(event) {
+    event.preventDefault();
+    collectionCount++;
+    localStorage.setItem("collectionCount", collectionCount);
+    updateDashboard();
+    event.target.reset();
+    showSuccess("Collection Saved", "Milk collection entry has been saved successfully.");
+}
+
+function saveProduct(productName) {
+    productCount++;
+    localStorage.setItem("productCount", productCount);
+    localStorage.setItem("lastProduct", productName);
+    updateDashboard();
+    showSuccess("Product Added", productName + " has been added to product count.");
+}
+
+function getLocation() {
+    const output = document.getElementById("geoOutput");
+
+    if (!navigator.geolocation) {
+        output.textContent = "Geolocation is not supported in this browser.";
+        return;
+    }
+
+    output.textContent = "Getting location...";
+
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            const latitude = position.coords.latitude.toFixed(4);
+            const longitude = position.coords.longitude.toFixed(4);
+            savedLocation = latitude + ", " + longitude;
+            localStorage.setItem("farmerLocation", savedLocation);
+            output.textContent = "Location saved: " + savedLocation;
+            updateDashboard();
+            showSuccess("Location Saved", "Farmer location has been saved using Geolocation API.");
+        },
+        function() {
+            output.textContent = "Unable to access location. Please allow location permission.";
+        }
+    );
+}
+
+updateDashboard();
+</script>
+
+</body>
+</html>
